@@ -20,11 +20,12 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
 
-from accounts.views import UserListReadOnlyViewset
+from accounts.views import UserListReadOnlyViewset, UserSignupViewSet
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r"users", UserListReadOnlyViewset, basename="users")
+router.register(r"signup", UserSignupViewSet, basename="signup")
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
