@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ChoiceField, ModelSerializer
 
 from .models import Ride
 
@@ -53,3 +53,17 @@ class RideStatusUpdateSerializer(ModelSerializer):
     class Meta:
         model = Ride
         fields = ["url", "status"]
+
+
+class RideAcceptSerializer(ModelSerializer):
+    """
+    Serializer for updating the status of a Ride instance.
+
+    Attributes:
+    model (Model): The Ride model.
+    fields (list): Fields to include in the serialized data for status update.
+    """
+
+    class Meta:
+        model = Ride
+        fields = ["status"]

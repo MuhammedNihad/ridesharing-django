@@ -1,9 +1,11 @@
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from .models import Ride
 from .serializers import (
+    RideAcceptSerializer,
     RideCreateSerializer,
     RideSerializer,
     RideStatusUpdateSerializer,
@@ -31,7 +33,37 @@ class RideModelViewSet(ModelViewSet):
             return RideCreateSerializer
         elif self.action == "update":
             return RideStatusUpdateSerializer
+        elif self.action == "accept_ride":
+            return RideAcceptSerializer
         return RideSerializer
+
+    @action(detail=True, methods=["post"], serializer_class=RideAcceptSerializer)
+    def accept_ride(self, request, pk=None):
+        """
+        Action to accept a ride request or driver users.
+
+        Args:
+        request (Request): The HTTP request object.
+        pk (str): The primary key of the ride instance.
+
+        Returns:
+        Response: HTTP response confirming the ride acceptance.
+        """
+        ride = self.get_object()
+
+        if not request.user.is_authenticated or not request.user.is_driver:
+            return Response(
+                {"error": "Unauthorized. User is not a driver."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        serializer = self.get_serializer(ride, data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        ride.status = serializer.validated_data["status"]
+        ride.driver = request.user
+        ride.save()
+        return Response({"message": "Ride status updated successfully."})
 
     def perform_create(self, serializer):
         """
