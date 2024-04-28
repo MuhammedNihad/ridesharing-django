@@ -1,4 +1,5 @@
 from django.contrib.auth.models import BaseUserManager
+from django.db.models import Manager
 
 
 class CustomUserManager(BaseUserManager):
@@ -30,3 +31,11 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("Superuser must have is_superuser=True.")
 
         return self._create_user(email, password, **extra_fields)
+
+
+class DriverUserManager(Manager):
+    """Custom manager filtering User instances with 'is_driver' set to True."""
+
+    def get_queryset(self):
+        """Return queryset of User instances where 'is_driver' is True."""
+        return super().get_queryset().filter(is_driver=True)

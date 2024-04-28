@@ -2,13 +2,14 @@ import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.db.models import (
+    BooleanField,
     CharField,
     EmailField,
     UUIDField,
 )
 from django.utils.translation import gettext_lazy as _
 
-from .managers import CustomUserManager
+from .managers import CustomUserManager, DriverUserManager
 
 
 class CustomUser(AbstractUser):
@@ -24,11 +25,17 @@ class CustomUser(AbstractUser):
     last_name = None
     username = None
     email = EmailField(_("Email address"), unique=True)
+    is_driver = BooleanField(
+        _("Driver status"),
+        default=False,
+        help_text="Designates whether the user is driver or not",
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
+    drivers = DriverUserManager()
 
     def __str__(self):
         """

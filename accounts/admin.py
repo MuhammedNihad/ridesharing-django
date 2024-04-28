@@ -20,6 +20,7 @@ class CustomUserAdmin(UserAdmin):
                     "is_active",
                     "is_staff",
                     "is_superuser",
+                    "is_driver",
                     "groups",
                     "user_permissions",
                 ),
@@ -27,7 +28,7 @@ class CustomUserAdmin(UserAdmin):
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
-    list_display = ["email", "name", "is_superuser"]
+    list_display = ["email", "name", "is_driver", "is_superuser"]
     search_fields = ["name"]
     ordering = ["email"]
     add_fieldsets = (
