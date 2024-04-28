@@ -40,6 +40,8 @@ class Ride(TimeStampedModel, UUIDModel):
         on_delete=CASCADE,
         related_name="rides_as_driver",
         limit_choices_to={"is_superuser": False, "is_driver": True},
+        blank=True,
+        null=True,
     )
     pickup_location = URLField(_("Pickup location"))
     dropoff_location = URLField(_("Dropoff location"))
