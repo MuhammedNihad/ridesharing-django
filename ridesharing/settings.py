@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     # Local apps
     "accounts",
     "base",
+    "ride",
     # Third party apps
     "rest_framework",
 ]
