@@ -1,10 +1,10 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet
+from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet, ViewSet
 
-from .serializers import UserRegisterSerializer, UserSerializer
+from .serializers import UserLoginSerializer, UserRegisterSerializer, UserSerializer
 
 User = get_user_model()
 
@@ -44,4 +44,19 @@ class UserSignupViewSet(GenericViewSet):
                 {"message": "User signed up successfully."},
                 status=status.HTTP_201_CREATED,
             )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserLoginViewSet(ViewSet):
+    permission_classes = [AllowAny]
+    serializer_class = UserLoginSerializer
+
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            user = serializer.validated_data["user"]
+            login(request, user)
+            return Response({"message": "Login successful"}, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
