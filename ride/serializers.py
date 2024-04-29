@@ -1,4 +1,4 @@
-from rest_framework.serializers import ChoiceField, ModelSerializer
+from rest_framework.serializers import ModelSerializer
 
 from .models import Ride
 
