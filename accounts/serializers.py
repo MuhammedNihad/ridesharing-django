@@ -88,7 +88,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
         user = User.objects.create(
             email=validated_data["email"],
-            name=validated_data["name"],
+            name=validated_data.get(
+                "name", ""
+            ),  # Use an empty string as the default value as name is optional and allowed to be blank
         )
         user.set_password(validated_data["password"])
         user.save()
