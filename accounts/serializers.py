@@ -1,26 +1,18 @@
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
-from rest_framework import serializers
+from rest_framework.serializers import (
+    CharField,
+    EmailField,
+    ModelSerializer,
+    Serializer,
+    ValidationError,
+)
 from rest_framework.validators import UniqueValidator
 
 User = get_user_model()
 
 
-class UserSerializer(serializers.ModelSerializer):
-    """
-    Serializer for User model data.
-
-    Attributes:
-    model (Model): The User model.
-    fields (list): The fields to include in the serialized data.
-    """
-
-    class Meta:
-        model = User
-        fields = ["id", "email", "name"]
-
-
-class UserRegisterSerializer(serializers.ModelSerializer):
+class UserSignupModelSerializer(ModelSerializer):
     """
     Serializer for user registration.
 
@@ -32,7 +24,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     fields (tuple): The fields to include in the serialized data.
     """
 
-    email = serializers.EmailField(
+    email = EmailField(
         required=True,
         validators=[
             UniqueValidator(
@@ -41,10 +33,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             )
         ],
     )
-    password = serializers.CharField(
-        write_only=True, required=True, validators=[validate_password]
-    )
-    password2 = serializers.CharField(write_only=True, required=True)
+    password = CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = CharField(write_only=True, required=True)
 
     class Meta:
         model = User
@@ -70,9 +60,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         """
 
         if attrs["password"] != attrs["password2"]:
-            raise serializers.ValidationError(
-                {"password": "Password fields didn't match."}
-            )
+            raise ValidationError({"password": "Password fields didn't match."})
         return attrs
 
     def create(self, validated_data):
@@ -97,7 +85,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserLoginSerializer(serializers.Serializer):
+class UserLoginSerializer(Serializer):
     """
     Serializer for user login.
 
@@ -106,8 +94,8 @@ class UserLoginSerializer(serializers.Serializer):
     password (CharField): Required write-only password field.
     """
 
-    email = serializers.CharField(required=True)
-    password = serializers.CharField(required=True, write_only=True)
+    email = CharField(required=True)
+    password = CharField(required=True, write_only=True)
 
     def validate(self, attrs):
         """
@@ -129,7 +117,21 @@ class UserLoginSerializer(serializers.Serializer):
         user = authenticate(email=email, password=password)
 
         if user is None:
-            raise serializers.ValidationError("Invalid credentials")
+            raise ValidationError("Invalid credentials")
 
         attrs["user"] = user
         return attrs
+
+
+class UserModelSerializer(ModelSerializer):
+    """
+    Serializer for User model data.
+
+    Attributes:
+    model (Model): The User model.
+    fields (list): The fields to include in the serialized data.
+    """
+
+    class Meta:
+        model = User
+        fields = ["id", "email", "name"]

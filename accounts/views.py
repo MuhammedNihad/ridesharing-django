@@ -4,22 +4,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet, ViewSet
 
-from .serializers import UserLoginSerializer, UserRegisterSerializer, UserSerializer
+from .serializers import (
+    UserLoginSerializer,
+    UserModelSerializer,
+    UserSignupModelSerializer,
+)
 
 User = get_user_model()
-
-
-class UserListReadOnlyViewset(ReadOnlyModelViewSet):
-    """
-    A read-only viewset for listing users excluding superusers.
-
-    Attributes:
-    queryset (QuerySet): The queryset of users excluding superusers.
-    serializer_class (Serializer): The serializer class for user data.
-    """
-
-    queryset = User.objects.filter(is_superuser=False)
-    serializer_class = UserSerializer
 
 
 class UserSignupViewSet(GenericViewSet):
@@ -33,7 +24,7 @@ class UserSignupViewSet(GenericViewSet):
     """
 
     queryset = User.objects.none()  # Required for ViewSet
-    serializer_class = UserRegisterSerializer
+    serializer_class = UserSignupModelSerializer
     permission_classes = [AllowAny]
 
     def create(self, request):
@@ -60,3 +51,16 @@ class UserLoginViewSet(ViewSet):
             return Response({"message": "Login successful"}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserListReadOnlyViewset(ReadOnlyModelViewSet):
+    """
+    A read-only viewset for listing users excluding superusers.
+
+    Attributes:
+    queryset (QuerySet): The queryset of users excluding superusers.
+    serializer_class (Serializer): The serializer class for user data.
+    """
+
+    queryset = User.objects.filter(is_superuser=False)
+    serializer_class = UserModelSerializer
